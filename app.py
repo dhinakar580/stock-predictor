@@ -33,8 +33,10 @@ st.sidebar.markdown("**Example India tickers:** RELIANCE, TCS, INFY, HDFCBANK")
 # ── Load Stock Data ───────────────────────────────────────────
 @st.cache_data
 def load_data(ticker, period):
-    df = yf.download(ticker, period=period, auto_adjust=True)
-    df.columns = [c[0] if isinstance(c, tuple) else c for c in df.columns]
+    df = yf.download(ticker, period=period, auto_adjust=True, progress=False)
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
+    df.columns = [str(c).strip() for c in df.columns]
     return df
 
 if st.button("🚀 Run Prediction", type="primary"):
